@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App with Timer</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+#quiz-container {
+    background-color: white;
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+#timer {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+#question {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+#options li {
+    list-style: none;
+    margin: 10px 0;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#next-btn {
+    display: none;
+    margin-top: 20px;
+}
+
+#result-container {
+    margin-top: 30px;
+}
+
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Quiz App</h1>
+        <div id="timer">Time Left: <span id="time">10</span>s</div>
+        <div id="question-container">
+            <p id="question"></p>
+            <ul id="options">
+                <li><button onclick="submitAnswer(0)">Option 1</button></li>
+                <li><button onclick="submitAnswer(1)">Option 2</button></li>
+                <li><button onclick="submitAnswer(2)">Option 3</button></li>
+                <li><button onclick="submitAnswer(3)">Option 4</button></li>
+            </ul>
+        </div>
+        <button id="next-btn" onclick="nextQuestion()">Next</button>
+        <div id="result-container" style="display: none;">
+            <h2>Your Score: <span id="score"></span></h2>
+            <button onclick="restartQuiz()">Restart Quiz</button>
+        </div>
+    </div>
+    <script>
+const quizData = [
+    {
+        question: "What is the capital of France?",
+        options: ["Berlin", "Madrid", "Paris", "Rome"],
+        correct: 2
+    },
+    {
+        question: "Who is the CEO of Tesla?",
+        options: ["Jeff Bezos", "Elon Musk", "Bill Gates", "Warren Buffet"],
+        correct: 1
+    },
+    {
+        question: "Which of these is a JavaScript framework?",
+        options: ["React", "Django", "Laravel", "Ruby on Rails"],
+        correct: 0
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let timeLeft = 10;
+let timerInterval;
+
+function loadQuestion() {
+    document.getElementById('question').innerText = quizData[currentQuestion].question;
+    const options = document.querySelectorAll('#options button');
+    options.forEach((btn, index) => {
+        btn.innerText = quizData[currentQuestion].options[index];
+    });
+    document.getElementById('next-btn').style.display = 'none';
+    startTimer();
+}
+
+function startTimer() {
+    timeLeft = 10;
+    document.getElementById('time').innerText = timeLeft;
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('time').innerText = timeLeft;
+        if (timeLeft === 0) {
+            clearInterval(timerInterval);
+            document.getElementById('next-btn').style.display = 'block';
+        }
+    }, 1000);
+}
+
+function submitAnswer(selectedOption) {
+    clearInterval(timerInterval);
+    const correctAnswer = quizData[currentQuestion].correct;
+    if (selectedOption === correctAnswer) {
+        score++;
+    }
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    document.getElementById('question-container').style.display = 'none';
+    document.getElementById('result-container').style.display = 'block';
+    document.getElementById('score').innerText = `${score} / ${quizData.length}`;
+}
+
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById('question-container').style.display = 'block';
+    document.getElementById('result-container').style.display = 'none';
+    loadQuestion();
+}
+
+// Load the first question when the page loads
+loadQuestion();
+
+    </script>
+</body>
+</html>
